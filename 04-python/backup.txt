@@ -1,0 +1,2 @@
+la date est : 
+le dossier courant est :
