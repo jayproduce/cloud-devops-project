@@ -1,0 +1,3 @@
+la date est :{date}
+le chemi dossier courant est : {current_dir} 
+le nombre de fichiers présents dans le dossier courant est :{number_of_files} 
