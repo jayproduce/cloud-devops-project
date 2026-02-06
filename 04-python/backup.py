@@ -8,7 +8,7 @@ current_dir = os.getcwd()
 if not os.path.exists("backup"):
    os.mkdir("backup")
 
-with open("backup.txt", "w") as f:
+with open("backup/backup.txt", "w") as f:
     f.write("la date est : \n")
     f.write("le dossier courant est :\n")
 
