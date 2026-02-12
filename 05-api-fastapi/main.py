@@ -2,13 +2,19 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "API DevOps active"}
+numbers_db = []
 
-@app.get("/hello/{name}")
-def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-@app.get("/add")
-def add (a: int, b: int):
-    return {"result": a + b}
+@app.post("/numbers")
+def stock_numbers(number : int):
+    numbers_db.append(number)
+    return "message": {"number added successfully"}
+
+@app.get("/numbers")
+def get_numbers():
+    return numbers_db
+
+
+
+
+     
+          
