@@ -1,52 +1,61 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+import models
+from database import engine, SessionLocal
+
+# ➜ Crée la table dans la base
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-numbers_db = []
-current_id = 1
+
+# ➜ Dépendance pour ouvrir/fermer la session DB
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-# ➜ Ajouter un nombre
+# ➜ CREATE
 @app.post("/numbers")
-def add_number(value: int):
-    global current_id
-    
-    number_entry = {
-        "id": current_id,
-        "value": value
-    }
-    
-    numbers_db.append(number_entry)
-    current_id += 1
-    
-    return {"message": "Number added", "data": number_entry}
+def create_number(value: int, db: Session = Depends(get_db)):
+    db_number = models.Number(value=value)
+    db.add(db_number)
+    db.commit()
+    db.refresh(db_number)
+    return db_number
 
 
-# ➜ Voir tous les nombres
+# ➜ READ ALL
 @app.get("/numbers")
-def get_numbers():
-    return numbers_db
+def get_numbers(db: Session = Depends(get_db)):
+    return db.query(models.Number).all()
 
 
-# ➜ Voir un nombre par ID
+# ➜ READ ONE
 @app.get("/numbers/{number_id}")
-def get_number(number_id: int):
-    for number in numbers_db:
-        if number["id"] == number_id:
-            return number
-    raise HTTPException(status_code=404, detail="Number not found")
+def get_number(number_id: int, db: Session = Depends(get_db)):
+    number = db.query(models.Number).filter(models.Number.id == number_id).first()
+    if not number:
+        raise HTTPException(status_code=404, detail="Number not found")
+    return number
 
 
-# ➜ Supprimer un nombre
+# ➜ DELETE
 @app.delete("/numbers/{number_id}")
-def delete_number(number_id: int):
-    for number in numbers_db:
-        if number["id"] == number_id:
-            numbers_db.remove(number)
-            return {"message": "Number deleted"}
-    raise HTTPException(status_code=404, detail="Number not found")
+def delete_number(number_id: int, db: Session = Depends(get_db)):
+    number = db.query(models.Number).filter(models.Number.id == number_id).first()
+    if not number:
+        raise HTTPException(status_code=404, detail="Number not found")
+    
+    db.delete(number)
+    db.commit()
+    return {"message": "Deleted successfully"}
 
-
+  
 
 
 
