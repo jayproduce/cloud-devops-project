@@ -1,4 +1,5 @@
 # cloud-devops-project
+![CI](https://github.com/jayproduce/cloud-devops-project/actions/workflows/ci.yml/badge.svg)
 cloud-devops-project/
 │
 ├── 01-git-github/
