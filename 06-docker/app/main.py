@@ -56,3 +56,6 @@ def delete(number_id: int, db: Session = Depends(get_db)):
 
      
           
+@app.get("/health")
+def health():
+    return {"status": "ok"}
